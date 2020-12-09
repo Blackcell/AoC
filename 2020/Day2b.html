@@ -1,3 +1,18 @@
+<!--
+
+Comment:
+Holy crap. Through this exercise I am realizing how important it is to practice TDD. After thinking I had nailed this, I
+found myself arriving at failure. The natural progression of debugging and troubleshooting lead me to build a test
+harness class to understand where I was going wrong. This immediately surfaced the problem being adding 1 to offset the
+index base instead of subtracting one. I stopped focusing on the output and tried to get the tests that were provided by
+the story to pass. Then I found I wasn't paying attention to the pass requirement and it was an exclusive or operation.
+
+Lessons:
+* Practice and get better at TDD
+* Increase test coverage as much as possible
+* Pay attention to the requirements
+
+-->
 
 <script>
     class BaseStringOperation {
@@ -18,14 +33,14 @@
 
             let min = parseInt(this.split[0]);
             if (min !== undefined && !isNaN(min)) {
-                this.min = min;
+                this.min = min - 1;
             } else {
                 this.isTestable = false;
             }
 
             let max = parseInt(this.split[1]);
             if (max !== undefined && !isNaN(max)) {
-                this.max = max;
+                this.max = max - 1;
             } else {
                 this.isTestable = false;
             }
@@ -45,35 +60,24 @@
             this.testValue = this.split[1] !== undefined ? this.split[1].trim() : null;
             this.isValid = true;
             this.invalidReason = "None";
-            const charArray = this.testValue.split('');
+            this.charArray = this.testValue.split('');
 
-            if(this.ruleInputSplit.minMaxPair.min >= charArray.length) {
-                this.isValid = false;
-                this.invalidReason = "Min position greater than max length of test subject";
-            } else if(this.ruleInputSplit.minMaxPair.max >= charArray.length) {
-                this.isValid = false;
-                this.invalidReason = "Max position greater than max length of test subject";
-            } else if (charArray[this.ruleInputSplit.minMaxPair.min + 1] !== this.ruleInputSplit.targetMatch){
-                this.isValid = false;
-                this.invalidReason = "Min position incorrect.";
-            } else if (charArray[this.ruleInputSplit.minMaxPair.max + 1] === this.ruleInputSplit.targetMatch){
-                this.isValid = false;
-                this.invalidReason = "Max position incorrect.";
+            this.firstMatch = false;
+            this.secondMatch = false;
+
+            if (this.ruleInputSplit.minMaxPair.min > this.charArray.length){
+                this.firstMatch = false;
+            } else {
+                this.firstMatch = this.charArray[this.ruleInputSplit.minMaxPair.min] !== this.ruleInputSplit.targetMatch;
             }
 
-            if (true){
-                console.log("TestValue", this.testValue);
-                console.log("Len", this.testValue.length);
-                console.log("Search", this.ruleInputSplit.targetMatch);
-                console.log("MinPos", this.ruleInputSplit.minMaxPair.min);
-                console.log("MaxPos", this.ruleInputSplit.minMaxPair.max);
-                console.log("MinFind", charArray[this.ruleInputSplit.minMaxPair.min]);
-                console.log("MaxFind", charArray[this.ruleInputSplit.minMaxPair.max]);
-                console.log("MaxFind", charArray[this.ruleInputSplit.minMaxPair.max]);
-                console.log("IsValid", this.isValid);
-                console.log("InValidReason", this.invalidReason);
-                console.log("-----------------------------------------------------");
+            if (this.ruleInputSplit.minMaxPair.max > this.charArray.length){
+                this.secondMatch = false;
+            } else {
+                this.secondMatch = this.charArray[this.ruleInputSplit.minMaxPair.max] !== this.ruleInputSplit.targetMatch;
             }
+
+            this.isValid = (this.firstMatch || this.secondMatch) && !(this.firstMatch && this.secondMatch);
         }
     }
 
@@ -97,4 +101,33 @@
     console.log(`Count: ${tasks.filter((task) => !task.isValid).length}`);
     console.log(`Tasks`, tasks.filter((task) => !task.isValid));
     console.log(`==END================================================`);
+
+    class TestTask {
+        constructor(testName, string, condition) {
+            this.task = new PasswordValidationTask(string);
+            console.log(`--TEST-----------------------------------------------`);
+            console.log(`[${this.task.isValid ? 'PASS' : 'FAIL'}] Name: ${testName}:`);
+            console.log(`Testing ${string} to be ${condition}`);
+            console.log(`${this.task.invalidReason}`);
+            console.log("TestValue", this.task.input);
+            console.log("TestValue", `[${this.task.testValue}]`);
+            console.log("Len", this.task.testValue.length);
+            console.log("Search", this.task.ruleInputSplit.targetMatch);
+            console.log("MinPos", this.task.ruleInputSplit.minMaxPair.min);
+            console.log("MaxPos", this.task.ruleInputSplit.minMaxPair.max);
+            console.log("MinFind", this.task.charArray[this.task.ruleInputSplit.minMaxPair.min]);
+            console.log("MaxFind", this.task.charArray[this.task.ruleInputSplit.minMaxPair.max]);
+            console.log("IsValid", this.task.isValid);
+            console.log("InValidReason", this.task.invalidReason);
+            console.log("-----------------------------------------------------");
+            console.log(`--TEST-----------------------------------------------`);
+        }
+    }
+
+    console.log(`==TESTING============================================`);
+    new TestTask('Valid Example #1', '1-3 a: abcde', true);
+    new TestTask('Invalid Example #1', '1-3 b: cdefg', true);
+    new TestTask('Invalid Example #2', '2-9 c: ccccccccc', false);
+    console.log(`==TESTING============================================`);
+
 </script>
