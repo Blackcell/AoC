@@ -1,0 +1,13 @@
+<script>
+    let isSolutionFound = false;
+    input.forEach(firstNumber => {
+        input.forEach(secondNumber => {
+            if (firstNumber + secondNumber == 2020){
+                isSolutionFound = true;
+                console.log(`${firstNumber} + ${secondNumber} = ${firstNumber + secondNumber}`);
+                console.log(`${firstNumber} * ${secondNumber} = ${firstNumber * secondNumber}`);
+            }
+        })
+    })
+    console.log(`Solution Found: ${isSolutionFound}`);
+</script>
