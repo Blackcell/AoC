@@ -31,7 +31,7 @@
     <!--
 
     Comment:
-
+        Ok wth.
     Lessons:
 
     -->
@@ -70,7 +70,7 @@
                     this.extend();
                 }
                 const viewOnly = this.value.slice();
-                if (columnPosition != null) {
+                if (columnPosition != 0) {
                     const intersect = this.value[columnPosition];
                     if (intersect === '.') {
                         viewOnly[columnPosition] = `O`;
@@ -79,11 +79,11 @@
                         viewOnly[columnPosition] = `X`;
                     }
                 }
-                this.visualizeRow(index, this.value.join(''));
+                // this.visualizeRow(index, this.value.join(''));
                 this.visualizeRow(index, viewOnly.join(''));
             }
             visualizeRow(index, out) {
-                this.print(`${this.pad(index, 3)}-> ${out}`);
+                this.print(`${this.pad(index, 3)} ${out}`);
             }
         }
         class Start extends Base {
