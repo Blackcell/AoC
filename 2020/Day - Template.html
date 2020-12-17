@@ -1,0 +1,79 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>AoC2020 - Day ?</title>
+
+</head>
+<style>
+    body {
+        font-family: "Courier New";
+        background-color: #181818;
+        color: #9f9f9f;
+        scroll-direction: horizontal;
+        white-space: nowrap;
+    }
+
+    #collisions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 50px;
+        text-align: center;
+        background-color: red;
+        font-size: 3rem;
+        color: black;
+    }
+</style>
+<body>
+<!--
+
+Comment:
+
+Lessons:
+-->
+<textarea cols="75" rows="25" id="input">
+pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+hcl:#623a2f
+
+eyr:2029 ecl:blu cid:129 byr:1989
+iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm
+
+hcl:#888785
+hgt:164cm byr:2001 iyr:2015 cid:88
+pid:545766238 ecl:hzl
+eyr:2022
+
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
+</textarea>
+<input type="button" id="submit" value="Process" onClick="process()" />
+
+<div id="output" />
+
+<script>
+    class Base {
+        constructor(input) {
+            this.input = input;
+        }
+    }
+    class Process extends Base {
+        constructor(input) {
+            super(input);
+        }
+        print(row) {
+            const newDiv = document.createElement('div');
+            newDiv.innerText = row;
+            document.body.appendChild(newDiv);
+        }
+    }
+
+    function process() {
+        const input = document.getElementById('input').value;
+        const process = new Process(input);
+    }
+</script>
+</body>
+</html>
