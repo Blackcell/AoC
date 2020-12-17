@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
 
-    <title>AoC2020 - Day 3 B</title>
+    <title>AoC2020 - Day 3b</title>
 
 </head>
 <style>
@@ -63,7 +63,7 @@ Lessons:
         }
 
         extend() {
-            this.value = this.value.concat(this.rawRow.split(''));
+            this.value = this.value.concat(this.rawRow.split('').slice());
         }
 
         // Credit: https://stackoverflow.com/questions/2998784/how-to-output-numbers-with-leading-zeros-in-javascript
@@ -152,9 +152,11 @@ Lessons:
         app.compute();
         let totalCollisions = app.rows.filter((row) => row.collision).length;
         app.print(`For slope index ${index} (${slope}) the total collisions = ${totalCollisions}`);
+        app.print(`-----------------------------------------------------------------------------------`);
         results.push(totalCollisions);
-        app.visualize(1);
+        app.visualize(true);
     });
+    console.log(app);
     const reduction  =  results.reduce((a, b) => a * b, 1);
     document.getElementById('collisions').innerText = reduction;
 

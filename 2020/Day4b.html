@@ -1,0 +1,133 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+
+    <title>AoC2020 - Day 4b</title>
+
+</head>
+<style>
+    body {
+        font-family: "Courier New";
+        background-color: #181818;
+        color: #9f9f9f;
+        scroll-direction: horizontal;
+        white-space: nowrap;
+    }
+
+    #collisions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 50px;
+        text-align: center;
+        background-color: red;
+        font-size: 3rem;
+        color: black;
+    }
+</style>
+<body>
+<!--
+
+Comment:
+
+Lessons:
+-->
+<textarea cols="75" rows="25" id="input">
+ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
+byr:1937 iyr:2017 cid:147 hgt:183cm
+
+iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
+hcl:#cfa07d byr:1929
+
+hcl:#ae17e1 iyr:2013
+eyr:2024
+ecl:brn pid:760753108 byr:1931
+hgt:179cm
+
+hcl:#cfa07d eyr:2025 pid:166559648
+iyr:2011 ecl:brn hgt:59in
+</textarea>
+<input type="button" id="submit" value="Process" onClick="process()" />
+
+<div id="output" />
+
+<script>
+    class Base {
+        constructor(input) {
+            this.input = input;
+        }
+    }
+    class KeyValue {
+        constructor(key, value) {
+            this.key = key;
+            this.value = value;
+        }
+    }
+    class Passport extends Base {
+        constructor(passportData) {
+            super(passportData);
+            this.dataFields = {};
+            this.isValid = false;
+            passportData.split(' ').forEach((rawField) => {
+                let field = rawField.split(':');
+                this.dataFields[field[0]] = field[1];
+            })
+            this.validate();
+        }
+        isValueValid(valid) {
+            return valid !== null && valid !== '' && valid !== undefined;
+        }
+        validate() {
+            const requiredFields = ['ecl','pid','eyr','hcl','byr','iyr','hgt'];
+            let isValid = true;
+            requiredFields.forEach((requiredField) => {
+                if (this.dataFields[requiredField] === undefined) {
+                    isValid = false;
+                } else {
+                    isValid = isValid && this.isValueValid(this.dataFields[requiredField]);
+                }
+            })
+            this.isValid = isValid;
+        }
+    }
+    class BatchProcess extends Base {
+        constructor(input) {
+            super(input);
+            this.passports = [];
+            this.separatePassports(input.split('\n'));
+        }
+        print(row) {
+            const newDiv = document.createElement('div');
+            newDiv.innerText = row;
+            document.body.appendChild(newDiv);
+        }
+        separatePassports(passportBatchArray) {
+            let accumulator = [];
+            passportBatchArray.forEach((passportArray) => {
+                accumulator.push(passportArray);
+                if(passportArray.trim() === '') {
+                    this.generatePassportObject(accumulator);
+                    accumulator = [];
+                }
+            })
+            this.generatePassportObject(accumulator);
+        }
+        generatePassportObject(passportArray) {
+            const joined = passportArray.join(' ');
+            if (joined !== ''){
+                this.passports.push(new Passport(joined));
+            }
+        }
+    }
+
+    function process() {
+        const input = document.getElementById('input').value;
+        const batchProcess = new BatchProcess(input);
+        batchProcess.print(`Valid passports: ${batchProcess.passports.filter((passport) => passport.isValid).length}`);
+    }
+</script>
+</body>
+</html>
