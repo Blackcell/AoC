@@ -36,19 +36,18 @@ Comment:
 Lessons:
 -->
 <textarea cols="75" rows="25" id="input">
-ecl:gry pid:860033327 eyr:2020 hcl:#fffffd
-byr:1937 iyr:2017 cid:147 hgt:183cm
+pid:087499704 hgt:74in ecl:grn iyr:2012 eyr:2030 byr:1980
+hcl:#623a2f
 
-iyr:2013 ecl:amb cid:350 eyr:2023 pid:028048884
-hcl:#cfa07d byr:1929
+eyr:2029 ecl:blu cid:129 byr:1989
+iyr:2014 pid:896056539 hcl:#a97842 hgt:165cm
 
-hcl:#ae17e1 iyr:2013
-eyr:2024
-ecl:brn pid:760753108 byr:1931
-hgt:179cm
+hcl:#888785
+hgt:164cm byr:2001 iyr:2015 cid:88
+pid:545766238 ecl:hzl
+eyr:2022
 
-hcl:#cfa07d eyr:2025 pid:166559648
-iyr:2011 ecl:brn hgt:59in
+iyr:2010 hgt:158cm hcl:#b6652a ecl:blu byr:1944 eyr:2021 pid:093154719
 </textarea>
 <input type="button" id="submit" value="Process" onClick="process()" />
 
@@ -60,12 +59,6 @@ iyr:2011 ecl:brn hgt:59in
             this.input = input;
         }
     }
-    class KeyValue {
-        constructor(key, value) {
-            this.key = key;
-            this.value = value;
-        }
-    }
     class Passport extends Base {
         constructor(passportData) {
             super(passportData);
@@ -75,10 +68,93 @@ iyr:2011 ecl:brn hgt:59in
                 let field = rawField.split(':');
                 this.dataFields[field[0]] = field[1];
             })
+            console.log('------------------------------');
+            console.log(this.dataFields);
             this.validate();
         }
-        isValueValid(valid) {
-            return valid !== null && valid !== '' && valid !== undefined;
+        validations = {
+            'byr': function (value) {
+                let validCheck = false;
+                const parseValue = parseInt(value);
+                if (isNaN(parseValue)){
+                    validCheck = false;
+                } else if(parseValue >= 1920 && parseValue <= 2002) {
+                    validCheck = true;
+                }
+                console.log(`Validating 'byr' with ${value} -> ${validCheck}`);
+                return validCheck;
+            },
+            'iyr': function (value) {
+                let validCheck = false;
+                const parseValue = parseInt(value);
+                if (isNaN(parseValue)){
+                    validCheck = false;
+                } else if(parseValue >= 2010 && parseValue <= 2020) {
+                    validCheck = true;
+                }
+                console.log(`Validating 'iyr' with ${value} -> ${validCheck}`);
+                return validCheck;
+            },
+            'eyr': function (value) {
+                let validCheck = false;
+                const parseValue = parseInt(value);
+                if (isNaN(parseValue)){
+                    validCheck = false;
+                } else if(parseValue >= 2020 && parseValue <= 2030) {
+                    validCheck = true;
+                }
+                console.log(`Validating 'eyr' with ${value} -> ${validCheck}`);
+                return validCheck;
+            },
+            'hgt': function (value) {
+                let validCheck = false;
+                const unitOfMeasure = value.substr(-2, 2);
+                const validUom = ['cm', 'in'];
+                if(validUom.indexOf(unitOfMeasure) === -1){
+                    validCheck = false;
+                } else {
+                    const unitValue = parseInt(value.replace(unitOfMeasure, ''));
+                    if (unitOfMeasure === 'cm') {
+                        validCheck = unitValue >= 150 && unitValue <= 193;
+                    }
+                    if (unitOfMeasure === 'in') {
+                        validCheck = unitValue >= 59 && unitValue <= 76;
+                    }
+                }
+                console.log(`Validating 'hgt' with ${value} -> ${validCheck}`);
+                return validCheck;
+            },
+            'hcl': function (value) {
+                const validCheck = value.match(/^#(?:[0-9a-fA-F]{6})$/);
+                console.log(`Validating 'hcl' with ${value} -> ${validCheck}`);
+                return validCheck;
+            },
+            'ecl': function (value) {
+                const validCheck = ['amb', 'blu', 'brn', 'gry', 'grn', 'hzl', 'oth'].indexOf(value) !== -1;
+                console.log(`Validating 'ecl' with ${value} -> ${validCheck}`);
+                return validCheck;
+            },
+            'pid': function (value) {
+                let validCheck = false;
+                if (isNaN(parseInt(value))){
+                    validCheck = false;
+                } else if(value.split('').length === 9) {
+                    validCheck = true;
+                }
+                console.log(`Validating 'pid' with ${value} -> ${validCheck}`);
+                return validCheck;
+            }
+        }
+        validateField(requiredField, value) {
+            let returnValue = false;
+            if(value === null || value === '' || value === undefined) {
+                returnValue = false;
+                console.log(`${requiredField} FAIL WITH ${value}`);
+            } else {
+                returnValue = this.validations[requiredField](value.trim());
+                console.log(`${requiredField} ${returnValue ? 'PASS' : 'FAIL'} WITH ${value}`);
+            }
+            return returnValue;
         }
         validate() {
             const requiredFields = ['ecl','pid','eyr','hcl','byr','iyr','hgt'];
@@ -87,9 +163,10 @@ iyr:2011 ecl:brn hgt:59in
                 if (this.dataFields[requiredField] === undefined) {
                     isValid = false;
                 } else {
-                    isValid = isValid && this.isValueValid(this.dataFields[requiredField]);
+                    isValid = isValid && this.validateField(requiredField, this.dataFields[requiredField]);
                 }
             })
+            console.log(`Passport is ${isValid}`);
             this.isValid = isValid;
         }
     }
@@ -126,6 +203,7 @@ iyr:2011 ecl:brn hgt:59in
     function process() {
         const input = document.getElementById('input').value;
         const batchProcess = new BatchProcess(input);
+        batchProcess.print(`Processed Passports: ${batchProcess.passports.length}`);
         batchProcess.print(`Valid passports: ${batchProcess.passports.filter((passport) => passport.isValid).length}`);
     }
 </script>
